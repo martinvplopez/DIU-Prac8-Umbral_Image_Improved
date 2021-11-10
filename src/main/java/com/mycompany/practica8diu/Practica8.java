@@ -9,6 +9,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.opencv.core.Core;
 
 /**
  *
@@ -21,6 +22,8 @@ public class Practica8 extends javax.swing.JFrame {
     private File fichero;
     
     public Practica8() {
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         initComponents();
         setLocationRelativeTo(null);
         filtro=new FileNameExtensionFilter("Imágenes (jpg, png, jpeg)", "jpg", "png", "jpeg");
@@ -260,8 +263,7 @@ public class Practica8 extends javax.swing.JFrame {
         String input = JOptionPane.showInputDialog(rootPane, "Introduzca el valor de umbral.");
         if(input!=null){
             try{
-                int umbral = Integer.parseInt(input);
-                lienzoImg1.umbralizarImagen(umbral);
+                lienzoImg1.umbralizarImagen(Integer.valueOf(input));
                 guardarItem.setEnabled(true);
             }catch(NumberFormatException e){
                 guardarItem.setEnabled(false);
