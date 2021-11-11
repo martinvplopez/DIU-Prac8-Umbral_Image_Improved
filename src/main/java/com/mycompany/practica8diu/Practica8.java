@@ -7,6 +7,7 @@ package com.mycompany.practica8diu;
 
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.opencv.core.Core;
@@ -20,6 +21,8 @@ public class Practica8 extends javax.swing.JFrame {
     private JFileChooser fc= new JFileChooser();
     private FileNameExtensionFilter filtro=null;
     private File fichero;
+    private boolean hasWindow;
+    private int flagWindow;
     
     public Practica8() {
         nu.pattern.OpenCV.loadShared();
@@ -32,6 +35,8 @@ public class Practica8 extends javax.swing.JFrame {
         guardarItem.setEnabled(false);
         umbralItem.setEnabled(false);
         verItem.setEnabled(false);
+        hasWindow=false;
+        flagWindow=0;
     }
 
     /**
@@ -43,8 +48,7 @@ public class Practica8 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDesktopPane1 = new javax.swing.JDesktopPane();
-        lienzoImg1 = new com.mycompany.practica8diu.LienzoImg();
+        desktop = new javax.swing.JDesktopPane();
         avisoLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         archivoMenu = new javax.swing.JMenu();
@@ -61,34 +65,15 @@ public class Practica8 extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        javax.swing.GroupLayout lienzoImg1Layout = new javax.swing.GroupLayout(lienzoImg1);
-        lienzoImg1.setLayout(lienzoImg1Layout);
-        lienzoImg1Layout.setHorizontalGroup(
-            lienzoImg1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 280, Short.MAX_VALUE)
+        javax.swing.GroupLayout desktopLayout = new javax.swing.GroupLayout(desktop);
+        desktop.setLayout(desktopLayout);
+        desktopLayout.setHorizontalGroup(
+            desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 695, Short.MAX_VALUE)
         );
-        lienzoImg1Layout.setVerticalGroup(
-            lienzoImg1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
-        );
-
-        jDesktopPane1.setLayer(lienzoImg1, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
-        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
-        jDesktopPane1.setLayout(jDesktopPane1Layout);
-        jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                .addGap(193, 193, 193)
-                .addComponent(lienzoImg1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(223, Short.MAX_VALUE))
-        );
-        jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                .addGap(99, 99, 99)
-                .addComponent(lienzoImg1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(134, Short.MAX_VALUE))
+        desktopLayout.setVerticalGroup(
+            desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 433, Short.MAX_VALUE)
         );
 
         avisoLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
@@ -176,7 +161,7 @@ public class Practica8 extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1)
+            .addComponent(desktop)
             .addGroup(layout.createSequentialGroup()
                 .addGap(160, 160, 160)
                 .addComponent(avisoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -185,7 +170,7 @@ public class Practica8 extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(desktop, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(avisoLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -194,31 +179,56 @@ public class Practica8 extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void closeWindows(){
+        JInternalFrame[] ventanas = desktop.getAllFrames();
+                 for (JInternalFrame ventana : ventanas) {
+                    ventana.dispose();
+                }
+    }
+    
     private void abrirItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_abrirItemActionPerformed
-        System.out.println("Abriendo");
-        fc.addChoosableFileFilter(filtro);
-        int rDialog=fc.showOpenDialog(null);
-        if (rDialog==JFileChooser.APPROVE_OPTION){
-            System.out.println("Archivo seleccionado");
-            fichero=  fc.getSelectedFile();
-            String ext=checkFileExtension(fichero);
-            if(ext==""){
-                avisoLabel.setText("¡Intentando abrir algo que no es una imagen!");
+        if(hasWindow){
+            int res = JOptionPane.showConfirmDialog(rootPane, "¿Estás seguro de que quieres otra imagen? Perderás todas tus ventanas!"
+                ,"Cerrar Ventanas Activas", JOptionPane.YES_NO_OPTION);
+            if(res==JOptionPane.YES_OPTION){
+                closeWindows();
+                hasWindow=false;
+                flagWindow=0;
+            }
+            if(res==JOptionPane.NO_OPTION){
+                flagWindow=1;
+            }
+        }
+        if(flagWindow==0){
+            fc.addChoosableFileFilter(filtro);
+            int rDialog=fc.showOpenDialog(null);
+            if (rDialog==JFileChooser.APPROVE_OPTION){
+                fichero=  fc.getSelectedFile();
+                String ext=checkFileExtension(fichero);
+                if(ext==""){
+                    avisoLabel.setText("¡Intentando abrir algo que no es una imagen!");
+                    avisoLabel.setVisible(true);
+
+                }
+
+            }
+            if (rDialog==JFileChooser.CANCEL_OPTION){
+                avisoLabel.setText("Nada seleccionado");
                 avisoLabel.setVisible(true);
             }
+        }
+            if(!avisoLabel.isVisible()){
+                VentanaInterna ventana=new VentanaInterna(this,fichero.getName());
+                desktop.add(ventana);
+                ventana.setVisible(true);
+                ventana.open(fichero);
+                guardarItem.setEnabled(true);
+                umbralItem.setEnabled(true);
+                verItem.setEnabled(true);
+                hasWindow=true;
+            }
 
-        }
-        if (rDialog==JFileChooser.CANCEL_OPTION){
-            avisoLabel.setText("Nada seleccionado");
-            avisoLabel.setVisible(true);
-        }
 
-        if(!avisoLabel.isVisible()){
-            lienzoImg1.cargaImagen(fichero);
-            guardarItem.setEnabled(true);
-            umbralItem.setEnabled(true);
-            verItem.setEnabled(true);
-        }
 
     }//GEN-LAST:event_abrirItemActionPerformed
 
@@ -239,10 +249,8 @@ public class Practica8 extends javax.swing.JFrame {
                     ,"Sobrescribir Fichero", JOptionPane.YES_NO_OPTION);
                 if(res2==JOptionPane.YES_OPTION){
                     System.out.println("Imagen Guardada sobreescrita");
-                    lienzoImg1.saveImage(fichero.getAbsolutePath());
                     guardarItem.setEnabled(false);
                 }else{
-                    lienzoImg1.saveImage(fichero.getAbsolutePath());
                     guardarItem.setEnabled(false);
                     System.out.println("Imagen Guardada");
 
@@ -263,8 +271,13 @@ public class Practica8 extends javax.swing.JFrame {
         String input = JOptionPane.showInputDialog(rootPane, "Introduzca el valor de umbral.");
         if(input!=null){
             try{
-                lienzoImg1.umbralizarImagen(Integer.valueOf(input));
+                int umbral = Integer.parseInt(input);
+                VentanaInterna ventana=new VentanaInterna(this,"Umbral: "+umbral+" "+fichero.getName());
+                desktop.add(ventana);
+                ventana.setVisible(true);
+                ventana.umbral(fichero, umbral);
                 guardarItem.setEnabled(true);
+                
             }catch(NumberFormatException e){
                 guardarItem.setEnabled(false);
                 JOptionPane.showMessageDialog(rootPane, "ERROR: Introducir solo números"
@@ -286,6 +299,7 @@ public class Practica8 extends javax.swing.JFrame {
     }//GEN-LAST:event_acercaItemActionPerformed
 
         private void exitAplication(){
+        fichero=null;
         int res = JOptionPane.showConfirmDialog(rootPane, "¿Quieres cerrar la aplicación?."
                 ,"Cerrar Aplicación", JOptionPane.YES_NO_OPTION);
         if(res==JOptionPane.YES_OPTION){
@@ -360,12 +374,11 @@ public class Practica8 extends javax.swing.JFrame {
     private javax.swing.JLabel avisoLabel;
     private javax.swing.JMenu ayudaMenu;
     private javax.swing.JMenuItem closeItem;
+    private javax.swing.JDesktopPane desktop;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenuItem guardarItem;
-    private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
-    private com.mycompany.practica8diu.LienzoImg lienzoImg1;
     private javax.swing.JMenuItem umbralItem;
     private javax.swing.JMenuItem verItem;
     private javax.swing.JMenu verMenu;

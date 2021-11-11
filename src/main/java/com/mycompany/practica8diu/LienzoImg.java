@@ -12,25 +12,23 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 public class LienzoImg extends JPanel {
+
+    private Mat imagenMat, matOriginal;
     private BufferedImage imagen;
-    private Mat imagenMat;
-    private boolean hasImage;
     
     public LienzoImg(){
-        hasImage = false;
     }
     
     @Override
     public void paintComponent(Graphics g){
         super.paintComponents(g);
-        if (hasImage)
-            g.drawImage(imagen.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH), 0, 0, null);
+        g.drawImage(imagen.getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH), 0, 0, null);
     }
     
     public void cargaImagen(File file){
-        imagenMat = Imgcodecs.imread(file.getAbsolutePath());
-        imagen = (BufferedImage) HighGui.toBufferedImage(imagenMat);
-        hasImage = true;
+        matOriginal = Imgcodecs.imread(file.getAbsolutePath());
+        imagenMat = matOriginal.clone();
+        imagen= (BufferedImage) HighGui.toBufferedImage(imagenMat);
         repaint();
     }
 
@@ -47,7 +45,8 @@ public class LienzoImg extends JPanel {
         }
     }
 
-    void umbralizarImagen(int value) {
+    void umbralizarImagen(File fichero,int value) {
+        imagenMat=Imgcodecs.imread(fichero.getAbsolutePath());
         imagen = ImagenUmbralizada(value);
         repaint();
     }
@@ -56,7 +55,8 @@ public class LienzoImg extends JPanel {
         return imagen;
     }
     
-    public void saveImage(String path){
+    public void guardarImage(String path){
+        matOriginal=imagenMat.clone();
         Imgcodecs.imwrite(path,imagenMat);
     }
 }
