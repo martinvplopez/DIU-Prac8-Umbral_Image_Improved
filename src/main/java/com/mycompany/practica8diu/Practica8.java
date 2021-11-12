@@ -32,9 +32,7 @@ public class Practica8 extends javax.swing.JFrame {
         filtro=new FileNameExtensionFilter("Imágenes (jpg, png, jpeg)", "jpg", "png", "jpeg");
         fc.setFileFilter(filtro);
         avisoLabel.setVisible(false);
-        guardarItem.setEnabled(false);
         umbralItem.setEnabled(false);
-        verItem.setEnabled(false);
         hasWindow=false;
         flagWindow=0;
     }
@@ -53,17 +51,19 @@ public class Practica8 extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         archivoMenu = new javax.swing.JMenu();
         abrirItem = new javax.swing.JMenuItem();
-        guardarItem = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         closeItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         umbralItem = new javax.swing.JMenuItem();
-        verMenu = new javax.swing.JMenu();
-        verItem = new javax.swing.JMenuItem();
         ayudaMenu = new javax.swing.JMenu();
         acercaItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
 
         javax.swing.GroupLayout desktopLayout = new javax.swing.GroupLayout(desktop);
         desktop.setLayout(desktopLayout);
@@ -91,15 +91,6 @@ public class Practica8 extends javax.swing.JFrame {
             }
         });
         archivoMenu.add(abrirItem);
-
-        guardarItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        guardarItem.setText("Guardar");
-        guardarItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                guardarItemActionPerformed(evt);
-            }
-        });
-        archivoMenu.add(guardarItem);
         archivoMenu.add(jSeparator1);
 
         closeItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -126,20 +117,6 @@ public class Practica8 extends javax.swing.JFrame {
         editMenu.add(umbralItem);
 
         jMenuBar1.add(editMenu);
-
-        verMenu.setMnemonic('V');
-        verMenu.setText("Ver");
-
-        verItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        verItem.setText("Ver Imagen");
-        verItem.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                verItemActionPerformed(evt);
-            }
-        });
-        verMenu.add(verItem);
-
-        jMenuBar1.add(verMenu);
 
         ayudaMenu.setMnemonic('H');
         ayudaMenu.setText("Ayuda");
@@ -222,46 +199,13 @@ public class Practica8 extends javax.swing.JFrame {
                 desktop.add(ventana);
                 ventana.setVisible(true);
                 ventana.open(fichero);
-                guardarItem.setEnabled(true);
                 umbralItem.setEnabled(true);
-                verItem.setEnabled(true);
                 hasWindow=true;
             }
 
 
 
     }//GEN-LAST:event_abrirItemActionPerformed
-
-    private void guardarItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarItemActionPerformed
-        System.out.println("Guardando");
-        int rDialog=fc.showSaveDialog(null);
-        if (rDialog==JFileChooser.APPROVE_OPTION){
-            System.out.println("Archivo seleccionado");
-            fichero=  fc.getSelectedFile();
-            String ext=checkFileExtension(fichero);
-            if(ext==""){
-                avisoLabel.setText("Guardando algo que no es una imagen");
-                avisoLabel.setVisible(true);
-            }
-            else if(fichero.exists()){
-                int res2 = JOptionPane.showConfirmDialog(rootPane
-                    , "AVISO: El fichero \""+fichero.getName()+"\" ya existe, ¿Quiere sobrescribirlo?."
-                    ,"Sobrescribir Fichero", JOptionPane.YES_NO_OPTION);
-                if(res2==JOptionPane.YES_OPTION){
-                    System.out.println("Imagen Guardada sobreescrita");
-                    guardarItem.setEnabled(false);
-                }else{
-                    guardarItem.setEnabled(false);
-                    System.out.println("Imagen Guardada");
-
-                }
-            }
-        }
-        if (rDialog==JFileChooser.CANCEL_OPTION){
-            avisoLabel.setText("Nada seleccionado");
-            avisoLabel.setVisible(true);
-        }
-    }//GEN-LAST:event_guardarItemActionPerformed
 
     private void closeItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeItemActionPerformed
         exitAplication();
@@ -276,10 +220,8 @@ public class Practica8 extends javax.swing.JFrame {
                 desktop.add(ventana);
                 ventana.setVisible(true);
                 ventana.umbral(fichero, umbral);
-                guardarItem.setEnabled(true);
                 
             }catch(NumberFormatException e){
-                guardarItem.setEnabled(false);
                 JOptionPane.showMessageDialog(rootPane, "ERROR: Introducir solo números"
                     , "ERROR", JOptionPane.ERROR_MESSAGE);
                 umbralItemActionPerformed(evt);
@@ -287,16 +229,19 @@ public class Practica8 extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_umbralItemActionPerformed
 
-    private void verItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_verItemActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_verItemActionPerformed
-
     private void acercaItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acercaItemActionPerformed
         JOptionPane.showMessageDialog(rootPane,  "Software para aplicar proceso de umbralización de una imagen dado por el usuario.\n" +
             "Product Version: Umbralización Imagen Beta\n"+
             "Devs: @martinvplopez, @joelnavri"
             , "AYUDA", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_acercaItemActionPerformed
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        JInternalFrame[] ventanas = desktop.getAllFrames();
+        for (JInternalFrame ventana : ventanas) {
+            ventana.setLocation(0, 0);
+        }
+    }//GEN-LAST:event_formComponentResized
 
         private void exitAplication(){
         fichero=null;
@@ -376,11 +321,8 @@ public class Practica8 extends javax.swing.JFrame {
     private javax.swing.JMenuItem closeItem;
     private javax.swing.JDesktopPane desktop;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem guardarItem;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem umbralItem;
-    private javax.swing.JMenuItem verItem;
-    private javax.swing.JMenu verMenu;
     // End of variables declaration//GEN-END:variables
 }
